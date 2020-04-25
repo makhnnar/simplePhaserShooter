@@ -4,8 +4,10 @@ import Beam from "./Beam"
 
 import Ship from "./Ship";
 
-import gameSettings from "../const/gameSettings";
+import Player from "./Player";
+
 import config from "../const/config";
+
 
 export default class Scene2 extends Phaser.Scene{
     
@@ -83,9 +85,9 @@ export default class Scene2 extends Phaser.Scene{
 
         }
 
-        this.ship1.setInteractive();
-        this.ship2.setInteractive();
-        this.ship3.setInteractive();
+        //this.ship1.setInteractive();
+        //this.ship2.setInteractive();
+        //this.ship3.setInteractive();
 
         this.input.on(
             'gameobjectdown',
@@ -93,14 +95,16 @@ export default class Scene2 extends Phaser.Scene{
             this
         );
 
-        this.player = this.physics.add.sprite(
-            config.width / 2 - 8, 
-            config.height -64,
-            "player"
-        ).setScale(2);
-        this.player.play("thrust");
+        const playerConfig = {
+            x : config.width / 2 - 8,
+            y : config.height -64,
+            sprite : "player",
+            anim : "thrust",
+            vel : 3
+        }
+        this.player = new Player(this,playerConfig);
+        //this.player.setCollideWorldBounds(true);
         this.cursorKeys = this.input.keyboard.createCursorKeys();
-        this.player.setCollideWorldBounds(true);
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.projectiles = this.add.group();
     }
@@ -110,7 +114,7 @@ export default class Scene2 extends Phaser.Scene{
         this.ship2.update();
         this.ship3.update();
         this.background.tilePositionY -= 0.5;
-        this.movePlayerManager();
+        this.player.movePlayerManager(this.cursorKeys);
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
             this.shootBeam();
         }
@@ -130,22 +134,6 @@ export default class Scene2 extends Phaser.Scene{
     destroyShip(pointer,gameObject){
         gameObject.setTexture("explosion");
         gameObject.play("explode");
-    }
-
-    movePlayerManager(){
-        this.player.setVelocity(0);
-
-        if(this.cursorKeys.left.isDown){
-            this.player.setVelocityX(-gameSettings.playerSpeed);
-        }else if(this.cursorKeys.right.isDown){
-            this.player.setVelocityX(gameSettings.playerSpeed);
-        }
-
-        if(this.cursorKeys.up.isDown){
-            this.player.setVelocityY(-gameSettings.playerSpeed);
-        }else if(this.cursorKeys.down.isDown){
-            this.player.setVelocityY(gameSettings.playerSpeed);
-        }
     }
 
 };

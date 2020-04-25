@@ -4,7 +4,7 @@ import config from "../const/config";
 
 export default class Ship extends Phaser.GameObjects.Sprite{
     
-    myShipConfig = {}; //no hace la asignacion de la variable en el constructor T.T
+    myShipConfig = {};
 
     constructor(scene,shipConfig) {
         super(
