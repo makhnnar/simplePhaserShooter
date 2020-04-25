@@ -98,7 +98,7 @@ export default class Scene2 extends Phaser.Scene{
             config.height -64,
             "player"
         ).setScale(2);
-        this.player.play("thurst");
+        this.player.play("thrust");
         this.cursorKeys = this.input.keyboard.createCursorKeys();
         this.player.setCollideWorldBounds(true);
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -106,9 +106,9 @@ export default class Scene2 extends Phaser.Scene{
     }
 
     update(){
-        this.ship1.update(1);
-        this.ship2.update(2);
-        this.ship3.update(3);
+        this.ship1.update();
+        this.ship2.update();
+        this.ship3.update();
         this.background.tilePositionY -= 0.5;
         this.movePlayerManager();
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){

@@ -13,6 +13,7 @@ export default class Ship extends Phaser.GameObjects.Sprite{
             shipConfig.y,
             shipConfig.sprite
         ).setScale(2);
+        this.myShipConfig = shipConfig;
         scene.add.existing(this);
         this.play(shipConfig.anim);
         this.setInteractive();
@@ -21,7 +22,7 @@ export default class Ship extends Phaser.GameObjects.Sprite{
     update(vel){
         this.moveShip(
             this,
-            vel
+            this.myShipConfig.vel
         );
     }
 
