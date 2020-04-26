@@ -55,6 +55,11 @@ export default class Scene2 extends Phaser.Scene{
         this.ship2 = new Ship(this,shipConfig2);
         this.ship3 = new Ship(this,shipConfig3);
 
+        this.enemies = this.physics.add.group();
+        this.enemies.add(this.ship1);
+        this.enemies.add(this.ship2);
+        this.enemies.add(this.ship3);
+
         this.powerUps = this.physics.add.group();
 
         // 2.2 Add multiple objects
@@ -107,17 +112,45 @@ export default class Scene2 extends Phaser.Scene{
         this.cursorKeys = this.input.keyboard.createCursorKeys();
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.projectiles = this.add.group();
+
+        this.physics.add.collider(
+            this.projectiles,
+            this.powerUps,
+            function(projectile,powerUp){
+                projectile.destroy();
+            }
+        );
+
+        this.physics.add.overlap(
+            this.player,
+            this.powerUps,
+            this.pickUpPower,
+            null,
+            this
+        );
+
+        this.physics.add.overlap(
+            this.projectiles,
+            this.enemies,
+            this.destroyEnemy,
+            null,
+            this
+        );
     }
 
     update(){
-        this.ship1.update();
-        this.ship2.update();
-        this.ship3.update();
         this.background.tilePositionY -= 0.5;
         this.player.movePlayerManager(this.cursorKeys);
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
             this.shootBeam();
         }
+        this.enemies
+            .getChildren()
+            .forEach(
+                (enemy) => {
+                    enemy.update();
+                }
+            );
         this.projectiles
             .getChildren()
             .forEach(
@@ -134,6 +167,21 @@ export default class Scene2 extends Phaser.Scene{
     destroyShip(pointer,gameObject){
         gameObject.setTexture("explosion");
         gameObject.play("explode");
+    }
+
+    destroyEnemy(projectile,enemy){
+        projectile.destroy();
+        enemy.executeExplosion();
+        setTimeout(
+            function(){
+                enemy.makeVisible();
+            }, 
+            1000
+        );
+    }
+
+    pickUpPower(player,powerUp){
+        powerUp.disableBody(true,true);
     }
 
 };

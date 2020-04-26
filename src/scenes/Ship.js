@@ -19,27 +19,38 @@ export default class Ship extends Phaser.GameObjects.Sprite{
         this.setInteractive();
     }
 
-    update(vel){
+    update(){
         this.moveShip(
-            this,
             this.myShipConfig.vel
         );
     }
 
-    moveShip(ship,speed){
-        ship.y += speed
-        if(ship.y>config.height){
-            this.resetShipPos(ship);
+    moveShip(speed){
+        this.y += speed
+        if(this.y>config.height){
+            this.resetShipPos();
         }
     }
 
-    resetShipPos(ship){
-        ship.y = 0;
+    resetShipPos(){
+        this.y = 0;
         var randomX = Phaser.Math.Between(
             0,
             config.width
         );
-        ship.x = randomX;
+        this.x = randomX;
+    }
+
+    executeExplosion(){
+        this.setTexture("explosion");
+        this.play("explode");
+    }
+
+    makeVisible(){
+        this.setTexture(this.myShipConfig.sprite);
+        this.play(this.myShipConfig.anim);
+        this.resetShipPos();
+        this.setVisible(true);
     }
     
 }
