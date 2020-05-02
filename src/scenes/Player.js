@@ -14,7 +14,7 @@ export default class Player extends Phaser.GameObjects.Sprite{
             playerConfig.x, 
             playerConfig.y,
             playerConfig.sprite
-        ).setScale(2);
+        );
         this.myPlayerConfig = playerConfig;
         this.play(playerConfig.anim);
         scene.add.existing(this);

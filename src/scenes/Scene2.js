@@ -136,6 +136,37 @@ export default class Scene2 extends Phaser.Scene{
             null,
             this
         );
+        this.physics.add.overlap(
+            this.player,
+            this.enemies, 
+            this.hurtPlayer, 
+            null, 
+            this
+        );
+
+        // 3.1 Add HUD background
+        var graphics = this.add.graphics();
+        graphics.fillStyle(0x000000, 1);
+        graphics.beginPath();
+        graphics.moveTo(0, 0);
+        graphics.lineTo(config.width, 0);
+        graphics.lineTo(config.width, 20);
+        graphics.lineTo(0, 20);
+        graphics.lineTo(0, 0);
+        //
+        graphics.closePath();
+        graphics.fillPath();
+
+        // 2.1 add a score property
+        this.score = 0;
+
+        // 1.3 new text using bitmap font
+        //this.scoreLabel = this.add.bitmapText(10, 5, "pixelFont", "SCORE ", 16);
+
+        // 4.3 format the score
+        var scoreFormated = this.zeroPad(this.score, 6);
+        this.scoreLabel = this.add.bitmapText(10, 5, "pixelFont", "SCORE " + scoreFormated  , 16);
+
     }
 
     update(){
@@ -169,6 +200,20 @@ export default class Scene2 extends Phaser.Scene{
         gameObject.play("explode");
     }
 
+    hurtPlayer(player, enemy) {
+        if(enemy.visible){
+            enemy.executeExplosion();
+            setTimeout(
+                function(){
+                    enemy.makeVisible();
+                }, 
+                1000
+            );
+            player.x = config.width / 2 - 8;
+            player.y = config.height - 64;
+        }
+    }
+
     destroyEnemy(projectile,enemy){
         projectile.destroy();
         enemy.executeExplosion();
@@ -178,7 +223,26 @@ export default class Scene2 extends Phaser.Scene{
             }, 
             1000
         );
+        // 2.2 increase score
+        this.score += 15;
+
+        // 2.3 update the score scoreLabel
+        //this.scoreLabel.text = "SCORE " + this.score;
+
+        // 4.2 format the score
+        var scoreFormated = this.zeroPad(this.score, 6);
+        this.scoreLabel.text = "SCORE " + scoreFormated;
     }
+
+    // 4.1 zero pad format function
+    zeroPad(number, size){
+        var stringNumber = String(number);
+        while(stringNumber.length < (size || 2)){
+        stringNumber = "0" + stringNumber;
+        }
+        return stringNumber;
+    }
+
 
     pickUpPower(player,powerUp){
         powerUp.disableBody(true,true);

@@ -12,7 +12,7 @@ export default class Ship extends Phaser.GameObjects.Sprite{
             shipConfig.x, 
             shipConfig.y,
             shipConfig.sprite
-        ).setScale(2);
+        );
         this.myShipConfig = shipConfig;
         scene.add.existing(this);
         this.play(shipConfig.anim);
@@ -39,6 +39,10 @@ export default class Ship extends Phaser.GameObjects.Sprite{
             config.width
         );
         this.x = randomX;
+    }
+
+    getVisibleState(){
+        return this.visible;
     }
 
     executeExplosion(){
