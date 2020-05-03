@@ -22,6 +22,8 @@ export default class Player extends Phaser.GameObjects.Sprite{
         scene.physics.world.enableBody(this);
         //necesario para que detecte los limites de la scena
         this.body.collideWorldBounds = true;
+        this.displayHeight = 64;//con estas propiedades puedo cambiar el tamaño del sprite y mantener las colisiones funcionando
+        this.displayWidth = 38;
     }
 
     movePlayerManager(cursorKeys){
