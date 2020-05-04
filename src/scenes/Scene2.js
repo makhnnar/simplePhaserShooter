@@ -1,12 +1,14 @@
 import Phaser from "phaser";
 
-import Beam from "./Beam"
+import Beam from "../entities/Beam"
 
-import Ship from "./Ship";
+import Ship from "../entities/Ship";
 
-import Player from "./Player";
+import Player from "../entities/Player";
 
 import config from "../const/config";
+
+import PowerUp from "../entities/PowerUp";
 
 
 export default class Scene2 extends Phaser.Scene{
@@ -22,77 +24,103 @@ export default class Scene2 extends Phaser.Scene{
             config.height,
             "background"
         );
+
         this.background.setOrigin(0,0).setScale(2);
-        /*this.add.text(
-            20,20,
-            "Playing game",
-            {font:"25px Arial",fill:"yellow"}
-        );*/
-
-        const shipConfig1 = {
-            x : config.width / 2 - 50,
-            y : config.height / 2,
-            sprite : "ship1",
-            anim : "ship1_anim",
-            vel : 1
-        }
-        const shipConfig2 = {
-            x : config.width / 2,
-            y : config.height / 2,
-            sprite : "ship2",
-            anim : "ship2_anim",
-            vel : 2
-        }
-        const shipConfig3 = {
-            x : config.width / 2 + 50,
-            y : config.height / 2,
-            sprite : "ship3",
-            anim : "ship3_anim",
-            vel : 3
-        }
-
-        this.ship1 = new Ship(this,shipConfig1);
-        this.ship2 = new Ship(this,shipConfig2);
-        this.ship3 = new Ship(this,shipConfig3);
 
         this.enemies = this.physics.add.group();
-        this.enemies.add(this.ship1);
-        this.enemies.add(this.ship2);
-        this.enemies.add(this.ship3);
+        
+        this.enemies.add(
+            new Ship(
+                this,
+                {
+                    x : config.width / 2 - 50,
+                    y : config.height / 2,
+                    sprite : "ship1",
+                    anim : "ship1_anim",
+                    vel : 2
+                }
+            )
+        );
+        this.enemies.add(
+            new Ship(
+                this,
+                {
+                    x : config.width / 2 - 50,
+                    y : config.height / 2,
+                    sprite : "ship1",
+                    anim : "ship1_anim",
+                    vel : 2
+                }
+            )
+        );
+        this.enemies.add(
+            new Ship(
+                this,
+                {
+                    x : config.width / 2 - 50,
+                    y : config.height / 2,
+                    sprite : "ship1",
+                    anim : "ship1_anim",
+                    vel : 2
+                }
+            )
+        );
+        this.enemies.add(
+            new Ship(
+                this,
+                {
+                    x : config.width / 2,
+                    y : config.height / 2,
+                    sprite : "ship2",
+                    anim : "ship2_anim",
+                    vel : 2
+                }
+            )
+        );
+        this.enemies.add(
+            new Ship(
+                this,
+                {
+                    x : config.width / 2,
+                    y : config.height / 2,
+                    sprite : "ship2",
+                    anim : "ship2_anim",
+                    vel : 2
+                }
+            )
+        );
+        this.enemies.add(
+            new Ship(
+                this,
+                {
+                    x : config.width / 2 + 50,
+                    y : config.height / 2,
+                    sprite : "ship3",
+                    anim : "ship3_anim",
+                    vel : 2
+                }
+            )
+        );
 
         this.powerUps = this.physics.add.group();
 
         // 2.2 Add multiple objects
-        var maxObjects = 4;
-        for (var i = 0; i <= maxObjects; i++) {
-            var powerUp = this.physics.add.sprite(16, 16, "powerUp");
-            this.powerUps.add(powerUp);
-            powerUp.setRandomPosition(
-                0, 
-                0,
-                config.width,
-                config.height
+        var maxObjects = 2;
+        for (var i = 0; i < maxObjects; i++) {
+            const selectPowerUp = Math.random();
+            var powerUp = new PowerUp(
+                this,
+                {
+                    x : Math.random()*config.width,
+                    y : Math.random()*config.height,
+                    sprite : "powerUp",
+                    anim : selectPowerUp > 0.5?"red":"gray",
+                    points: selectPowerUp > 0.5? 50 : 25,
+                    vel : selectPowerUp > 0.5? 6 : 4
+                }
             );
-
-            // set random animation
-            if (Math.random() > 0.5) {
-                powerUp.play("red");
-            } else {
-                powerUp.play("gray");
-            }
-
-            // setVelocity
-            powerUp.setVelocity(100, 100);
-            // 3.2
-            powerUp.setCollideWorldBounds(true);
-            // 3.3
-            powerUp.setBounce(1);
-
+            this.powerUps.add(powerUp);
         }
-
-        //this.ship1.setInteractive();
-        //this.ship2.setInteractive();
-        //this.ship3.setInteractive();
 
         this.input.on(
             'gameobjectdown',
@@ -100,20 +128,28 @@ export default class Scene2 extends Phaser.Scene{
             this
         );
 
-        const playerConfig = {
-            x : config.width / 2 - 8,
-            y : config.height -64,
-            sprite : "player",
-            anim : "thrust",
-            vel : 3
-        }
-        this.player = new Player(this,playerConfig);
-        //this.player.setCollideWorldBounds(true);
+        this.player = new Player(
+            this,
+            {
+                x : config.width / 2 - 8,
+                y : config.height -64,
+                sprite : "player",
+                anim : "thrust",
+                vel : 3
+            }
+        );
+        
         this.cursorKeys = this.input.keyboard.createCursorKeys();
-        this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        
+        this.spacebar = this.input.keyboard.addKey(
+            Phaser.Input.Keyboard.KeyCodes.SPACE
+        );
+
         this.projectiles = this.add.group();
 
-        this.physics.add.collider(
+        //colision de proyectiles con los power ups
+        //collider reduces valocity on colissionss
+        this.physics.add.overlap(
             this.projectiles,
             this.powerUps,
             function(projectile,powerUp){
@@ -121,6 +157,7 @@ export default class Scene2 extends Phaser.Scene{
             }
         );
 
+        //colision de los power ups con el player
         this.physics.add.overlap(
             this.player,
             this.powerUps,
@@ -129,6 +166,8 @@ export default class Scene2 extends Phaser.Scene{
             this
         );
 
+        //colision de los enemigos con los proyectiles
+        //destruimos enemigo
         this.physics.add.overlap(
             this.projectiles,
             this.enemies,
@@ -136,6 +175,9 @@ export default class Scene2 extends Phaser.Scene{
             null,
             this
         );
+
+        //colision de los enemigos con el player
+        //destruimos player
         this.physics.add.overlap(
             this.player,
             this.enemies, 
@@ -189,10 +231,18 @@ export default class Scene2 extends Phaser.Scene{
                     beam.update();
                 }
             );
+        this.powerUps
+            .getChildren()
+            .forEach(
+                (powerUp) =>{
+                    powerUp.update();
+                }
+            )
     }
 
     shootBeam(){
         var beam = new Beam(this);
+        this.projectiles.add(beam);
     }
     
     destroyShip(pointer,gameObject){
@@ -201,7 +251,7 @@ export default class Scene2 extends Phaser.Scene{
     }
 
     hurtPlayer(player, enemy) {
-        if(enemy.visible){
+        if(enemy.getVisibleState()){
             enemy.executeExplosion();
             setTimeout(
                 function(){
@@ -215,23 +265,18 @@ export default class Scene2 extends Phaser.Scene{
     }
 
     destroyEnemy(projectile,enemy){
-        projectile.destroy();
-        enemy.executeExplosion();
-        setTimeout(
-            function(){
-                enemy.makeVisible();
-            }, 
-            1000
-        );
-        // 2.2 increase score
-        this.score += 15;
-
-        // 2.3 update the score scoreLabel
-        //this.scoreLabel.text = "SCORE " + this.score;
-
-        // 4.2 format the score
-        var scoreFormated = this.zeroPad(this.score, 6);
-        this.scoreLabel.text = "SCORE " + scoreFormated;
+        if(enemy.getVisibleState()){
+            projectile.destroy();
+            enemy.executeExplosion();
+            setTimeout(
+                function(){
+                    enemy.makeVisible();
+                }, 
+                1000
+            );
+            // 2.2 increase score
+            this.setScore(15);
+        }
     }
 
     // 4.1 zero pad format function
@@ -245,7 +290,28 @@ export default class Scene2 extends Phaser.Scene{
 
 
     pickUpPower(player,powerUp){
-        powerUp.disableBody(true,true);
+        //todo:add a momentaneus upgrade or downgrade to player
+        if(powerUp.getVisibleState()){
+            powerUp.executeEffect();
+            this.time.addEvent({
+                delay: 1000,
+                callback: function(){
+                    powerUp.makeVisible();
+                },
+                callbackScope: this,
+                loop: false
+            });
+            this.setScore(100);
+        }
+    }
+
+    setScore(valueToAdd){
+        //updated value
+        this.score += valueToAdd;
+        // 4.2 format the score
+        var scoreFormated = this.zeroPad(this.score, 6);
+        // 2.3 update the score scoreLabel
+        this.scoreLabel.text = "SCORE " + scoreFormated;
     }
 
 };

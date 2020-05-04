@@ -1,5 +1,11 @@
 import Phaser from "phaser";
-
+//todo: crear efectos a los power ups
+//agregar mas enemigos
+//resetear puntaje en colision
+//colocar contador de vidas
+//aumentar la velocidad a medida que pasa el tiempo
+//colocar enemigos que devuelven los proyectiles
+//agregar colision de proyectiles con el player
 export default class Beam extends Phaser.GameObjects.Sprite{
 
     constructor(scene) {
@@ -10,9 +16,9 @@ export default class Beam extends Phaser.GameObjects.Sprite{
         this.play("beam_anim");
         scene.physics.world.enableBody(this);
         this.body.velocity.y = -250;
-        scene.projectiles.add(this);
-        this.displayHeight = 64;
-        this.displayWidth = 64;
+        //scene.projectiles.add(this);
+        //this.displayHeight = 64;
+        //this.displayWidth = 64;
     }
 
     update(){

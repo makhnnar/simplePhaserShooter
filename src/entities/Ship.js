@@ -16,7 +16,12 @@ export default class Ship extends Phaser.GameObjects.Sprite{
         this.myShipConfig = shipConfig;
         scene.add.existing(this);
         this.play(shipConfig.anim);
-        this.setInteractive();
+        //necesario para agregarle fisicas
+        scene.physics.world.enableBody(this);
+        //necesario para que detecte los limites de la scena
+        //no aplicable ya que el objeto debe desaparecer al llegar abajo
+        //this.body.collideWorldBounds = true;
+        //this.setInteractive();
     }
 
     update(){
@@ -47,7 +52,7 @@ export default class Ship extends Phaser.GameObjects.Sprite{
 
     executeExplosion(){
         this.setTexture("explosion");
-        this.play("explode");
+        this.play("explode");//al ejecutar esta funcion, el cuerpo se hace invisible
     }
 
     makeVisible(){
