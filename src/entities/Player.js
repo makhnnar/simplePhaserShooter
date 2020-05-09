@@ -6,8 +6,6 @@ export default class Player extends Phaser.GameObjects.Sprite{
     
     myPlayerConfig = {};
 
-    //esto funciona, pero tiene problemas definiendo lo bordes del objeto
-
     constructor(scene,playerConfig) {
         super(
             scene,
@@ -41,4 +39,18 @@ export default class Player extends Phaser.GameObjects.Sprite{
         }
     }
     
+    executeExplosion(){
+        this.myPlayerConfig.isEnable = false;
+        this.setTexture("explosion");
+        this.play("explode");//al ejecutar esta funcion, el cuerpo se hace invisible
+    }
+
+    makeVisible(){
+        this.myPlayerConfig.isEnable = true;
+        this.setTexture(this.myPlayerConfig.sprite);
+        this.play(this.myPlayerConfig.anim);
+        this.resetShipPos();
+        this.setVisible(true);
+    }
+
 }

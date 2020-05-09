@@ -12,6 +12,10 @@ const config = {
       acade:{
           debug:false
       }
+    },
+    scale: {
+      mode: Phaser.Scale.FIT,//ajustamos a todo el tam de pantalla
+      autoCenter: Phaser.Scale.CENTER_BOTH //centramos en ambas direcciones
     }
 };
 

@@ -1,11 +1,4 @@
 import Phaser from "phaser";
-//todo: crear efectos a los power ups
-//agregar mas enemigos
-//resetear puntaje en colision
-//colocar contador de vidas
-//aumentar la velocidad a medida que pasa el tiempo
-//colocar enemigos que devuelven los proyectiles
-//agregar colision de proyectiles con el player
 
 import config from "../const/config";
 
@@ -50,6 +43,18 @@ export default class PowerUp extends Phaser.GameObjects.Sprite{
 
     getVisibleState(){
         return this.visible;
+    }
+
+    getPoints(){
+        return this.mypowerUpConfig.points;
+    }
+
+    getDuration(){
+        return this.mypowerUpConfig.duration;
+    }
+
+    getShootQuanty(){
+        return this.mypowerUpConfig.shootQuanty;
     }
 
     executeEffect(){

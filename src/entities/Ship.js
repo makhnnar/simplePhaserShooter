@@ -46,16 +46,22 @@ export default class Ship extends Phaser.GameObjects.Sprite{
         this.x = randomX;
     }
 
-    getVisibleState(){
-        return this.visible;
+    getEnableState(){
+        return this.myShipConfig.isEnable;
+    }
+
+    getDuration(){
+        return this.myShipConfig.duration;
     }
 
     executeExplosion(){
+        this.myShipConfig.isEnable = false;
         this.setTexture("explosion");
         this.play("explode");//al ejecutar esta funcion, el cuerpo se hace invisible
     }
 
     makeVisible(){
+        this.myShipConfig.isEnable = true;
         this.setTexture(this.myShipConfig.sprite);
         this.play(this.myShipConfig.anim);
         this.resetShipPos();

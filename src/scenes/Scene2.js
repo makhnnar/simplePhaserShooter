@@ -9,6 +9,7 @@ import Player from "../entities/Player";
 import config from "../const/config";
 
 import PowerUp from "../entities/PowerUp";
+import DecreaserCounter from "../utils/DecreaserCounter";
 
 
 export default class Scene2 extends Phaser.Scene{
@@ -18,6 +19,9 @@ export default class Scene2 extends Phaser.Scene{
     }
 
     create(){
+
+        this.shootQuanty = 1;
+
         this.background = this.add.tileSprite(
             0,0,
             config.width,
@@ -37,7 +41,9 @@ export default class Scene2 extends Phaser.Scene{
                     y : config.height / 2,
                     sprite : "ship1",
                     anim : "ship1_anim",
-                    vel : 2
+                    vel : 2,
+                    isEnable : true,
+                    duration: Math.random()*5
                 }
             )
         );
@@ -49,7 +55,9 @@ export default class Scene2 extends Phaser.Scene{
                     y : config.height / 2,
                     sprite : "ship1",
                     anim : "ship1_anim",
-                    vel : 2
+                    vel : 2,
+                    isEnable : true,
+                    duration: Math.random()*5
                 }
             )
         );
@@ -61,7 +69,9 @@ export default class Scene2 extends Phaser.Scene{
                     y : config.height / 2,
                     sprite : "ship1",
                     anim : "ship1_anim",
-                    vel : 2
+                    vel : 2,
+                    isEnable : true,
+                    duration: Math.random()*5
                 }
             )
         );
@@ -73,7 +83,9 @@ export default class Scene2 extends Phaser.Scene{
                     y : config.height / 2,
                     sprite : "ship2",
                     anim : "ship2_anim",
-                    vel : 2
+                    vel : 2,
+                    isEnable : true,
+                    duration: Math.random()*5
                 }
             )
         );
@@ -85,7 +97,9 @@ export default class Scene2 extends Phaser.Scene{
                     y : config.height / 2,
                     sprite : "ship2",
                     anim : "ship2_anim",
-                    vel : 2
+                    vel : 2,
+                    isEnable : true,
+                    duration: Math.random()*5
                 }
             )
         );
@@ -97,7 +111,9 @@ export default class Scene2 extends Phaser.Scene{
                     y : config.height / 2,
                     sprite : "ship3",
                     anim : "ship3_anim",
-                    vel : 2
+                    vel : 2,
+                    isEnable : true,
+                    duration: Math.random()*5
                 }
             )
         );
@@ -116,17 +132,13 @@ export default class Scene2 extends Phaser.Scene{
                     sprite : "powerUp",
                     anim : selectPowerUp > 0.5?"red":"gray",
                     points: selectPowerUp > 0.5? 50 : 25,
-                    vel : selectPowerUp > 0.5? 6 : 4
+                    vel : selectPowerUp > 0.5? 6 : 4,
+                    duration: selectPowerUp > 0.5? 20 : 10,
+                    shootQuanty: selectPowerUp > 0.5? 2 : 3
                 }
             );
             this.powerUps.add(powerUp);
         }
-
-        this.input.on(
-            'gameobjectdown',
-            this.destroyShip,
-            this
-        );
 
         this.player = new Player(
             this,
@@ -202,21 +214,52 @@ export default class Scene2 extends Phaser.Scene{
         // 2.1 add a score property
         this.score = 0;
 
-        // 1.3 new text using bitmap font
-        //this.scoreLabel = this.add.bitmapText(10, 5, "pixelFont", "SCORE ", 16);
+        this.shields = 6;
 
-        // 4.3 format the score
-        var scoreFormated = this.zeroPad(this.score, 6);
-        this.scoreLabel = this.add.bitmapText(10, 5, "pixelFont", "SCORE " + scoreFormated  , 16);
+        this.timeLeft = 300;
+
+        this.scoreLabel = this.add.bitmapText(
+            10, 
+            5, 
+            "pixelFont", 
+            "SCORE " + this.zeroPad(this.score, 6),
+            16
+        );
+
+        this.shieldsLabel = this.add.bitmapText(
+            150, 
+            5, 
+            "pixelFont", 
+            "SHIELDS " + this.zeroPad(this.shields, 3),
+            16
+        );
+
+        this.timeLabel = this.add.bitmapText(
+            350, 
+            5, 
+            "pixelFont", 
+            "TIME LEFT " + this.zeroPad(this.timeLeft, 4),
+            16
+        );
+
+        this.decreaseCounter = new DecreaserCounter(
+            this,
+            this.timeLeft
+        );
 
     }
 
     update(){
-        this.background.tilePositionY -= 0.5;
-        this.player.movePlayerManager(this.cursorKeys);
-        if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
-            this.shootBeam();
+        if(this.shields>0){
+            this.player.movePlayerManager(this.cursorKeys);
+            if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
+                this.shootBeam();
+            }
+            this.timeLabel.text = "TIME LEFT " + this.decreaseCounter.getLetfTime();
+        }else{
+            this.player.executeExplosion();
         }
+        this.background.tilePositionY -= 0.5;
         this.enemies
             .getChildren()
             .forEach(
@@ -241,39 +284,49 @@ export default class Scene2 extends Phaser.Scene{
     }
 
     shootBeam(){
-        var beam = new Beam(this);
-        this.projectiles.add(beam);
+        for(let i=0;i<this.shootQuanty;i++){
+            this.time.addEvent({
+                delay: i*100,
+                callback: function(){
+                    this.projectiles.add(
+                        new Beam(this)
+                    );
+                },
+                callbackScope: this,
+                loop: false
+            });
+        }
     }
     
-    destroyShip(pointer,gameObject){
-        gameObject.setTexture("explosion");
-        gameObject.play("explode");
-    }
-
     hurtPlayer(player, enemy) {
-        if(enemy.getVisibleState()){
+        if(enemy.getEnableState()){
             enemy.executeExplosion();
             setTimeout(
                 function(){
                     enemy.makeVisible();
                 }, 
-                1000
+                (enemy.getDuration()+1)*1000
             );
-            player.x = config.width / 2 - 8;
-            player.y = config.height - 64;
+            //disminuimos los shields
+            if(this.shields>0){
+                this.shields--;
+            }
+            this.shieldsLabel.text = "SHIELDS " + this.zeroPad(this.shields,3);
         }
     }
 
     destroyEnemy(projectile,enemy){
-        if(enemy.getVisibleState()){
+        if(enemy.getEnableState()){
             projectile.destroy();
             enemy.executeExplosion();
-            setTimeout(
-                function(){
+            this.time.addEvent({
+                delay: (enemy.getDuration()+1)*1000,
+                callback: function(){
                     enemy.makeVisible();
-                }, 
-                1000
-            );
+                },
+                callbackScope: this,
+                loop: false
+            });
             // 2.2 increase score
             this.setScore(15);
         }
@@ -294,24 +347,34 @@ export default class Scene2 extends Phaser.Scene{
         if(powerUp.getVisibleState()){
             powerUp.executeEffect();
             this.time.addEvent({
-                delay: 1000,
+                delay: powerUp.getDuration()*3*1000,
                 callback: function(){
                     powerUp.makeVisible();
                 },
                 callbackScope: this,
                 loop: false
             });
-            this.setScore(100);
+            this.shootQuanty = powerUp.getShootQuanty();
+            this.time.addEvent({
+                delay: powerUp.getDuration()*1000,
+                callback: function(){
+                    this.shootQuanty = 1;
+                    powerUp.makeVisible();
+                },
+                callbackScope: this,
+                loop: false
+            });
+            this.setScore(
+                powerUp.getPoints()
+            );
         }
     }
 
     setScore(valueToAdd){
         //updated value
         this.score += valueToAdd;
-        // 4.2 format the score
-        var scoreFormated = this.zeroPad(this.score, 6);
         // 2.3 update the score scoreLabel
-        this.scoreLabel.text = "SCORE " + scoreFormated;
+        this.scoreLabel.text = "SCORE " + this.zeroPad(this.score, 6);
     }
 
 };
