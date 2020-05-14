@@ -1,6 +1,5 @@
 import Phaser from "phaser";
-//todo: crear efectos a los power ups
-//agregar mas enemigos
+
 //resetear puntaje en colision
 //colocar contador de vidas
 //aumentar la velocidad a medida que pasa el tiempo

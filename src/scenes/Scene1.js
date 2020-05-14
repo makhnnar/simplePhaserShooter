@@ -11,6 +11,10 @@ export default class Scene1 extends Phaser.Scene{
             "background",
             "src/assets/images/background.png"
         );
+        this.load.image(
+            "jugarBtn",
+            "src/assets/images/jugarBtn.png"
+        );
         this.load.spritesheet(
             "ship1",
             "src/assets/spritesheets/ship.png",
@@ -77,7 +81,7 @@ export default class Scene1 extends Phaser.Scene{
 
     create(){
         //this.add.text(20,20,"Loading gamesrc.");
-        this.scene.start("playGame");
+        this.scene.start("goalScene");
 
         this.anims.create({
             key:"ship1_anim",
