@@ -37,8 +37,8 @@ export default class Scene2 extends Phaser.Scene{
             new Ship(
                 this,
                 {
-                    x : config.width / 2 - 50,
-                    y : config.height / 2,
+                    x : Math.random()*config.width,
+                    y : Math.random()*config.height,
                     sprite : "ship1",
                     anim : "ship1_anim",
                     vel : 2,
@@ -51,8 +51,8 @@ export default class Scene2 extends Phaser.Scene{
             new Ship(
                 this,
                 {
-                    x : config.width / 2 - 50,
-                    y : config.height / 2,
+                    x : Math.random()*config.width,
+                    y : Math.random()*config.height,
                     sprite : "ship1",
                     anim : "ship1_anim",
                     vel : 2,
@@ -65,8 +65,8 @@ export default class Scene2 extends Phaser.Scene{
             new Ship(
                 this,
                 {
-                    x : config.width / 2 - 50,
-                    y : config.height / 2,
+                    x : Math.random()*config.width,
+                    y : Math.random()*config.height,
                     sprite : "ship1",
                     anim : "ship1_anim",
                     vel : 2,
@@ -79,8 +79,8 @@ export default class Scene2 extends Phaser.Scene{
             new Ship(
                 this,
                 {
-                    x : config.width / 2,
-                    y : config.height / 2,
+                    x : Math.random()*config.width,
+                    y : Math.random()*config.height,
                     sprite : "ship2",
                     anim : "ship2_anim",
                     vel : 2,
@@ -93,8 +93,8 @@ export default class Scene2 extends Phaser.Scene{
             new Ship(
                 this,
                 {
-                    x : config.width / 2,
-                    y : config.height / 2,
+                    x : Math.random()*config.width,
+                    y : Math.random()*config.height,
                     sprite : "ship2",
                     anim : "ship2_anim",
                     vel : 2,
@@ -107,8 +107,8 @@ export default class Scene2 extends Phaser.Scene{
             new Ship(
                 this,
                 {
-                    x : config.width / 2 + 50,
-                    y : config.height / 2,
+                    x : Math.random()*config.width,
+                    y : Math.random()*config.height,
                     sprite : "ship3",
                     anim : "ship3_anim",
                     vel : 2,
@@ -130,6 +130,7 @@ export default class Scene2 extends Phaser.Scene{
                     x : Math.random()*config.width,
                     y : Math.random()*config.height,
                     sprite : "powerUp",
+                    isEnable : true,
                     anim : selectPowerUp > 0.5?"red":"gray",
                     points: selectPowerUp > 0.5? 50 : 25,
                     vel : selectPowerUp > 0.5? 6 : 4,
@@ -145,6 +146,7 @@ export default class Scene2 extends Phaser.Scene{
             {
                 x : config.width / 2 - 8,
                 y : config.height -64,
+                isEnable : true,
                 sprite : "player",
                 anim : "thrust",
                 vel : 3
@@ -299,7 +301,7 @@ export default class Scene2 extends Phaser.Scene{
     }
     
     hurtPlayer(player, enemy) {
-        if(enemy.getEnableState()){
+        if(enemy.getEnableState() && player.getEnableState()){
             enemy.executeExplosion();
             setTimeout(
                 function(){
@@ -344,7 +346,7 @@ export default class Scene2 extends Phaser.Scene{
 
     pickUpPower(player,powerUp){
         //todo:add a momentaneus upgrade or downgrade to player
-        if(powerUp.getVisibleState()){
+        if(powerUp.getEnableState() && player.getEnableState()){
             powerUp.executeEffect();
             this.time.addEvent({
                 delay: powerUp.getDuration()*3*1000,

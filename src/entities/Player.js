@@ -39,7 +39,14 @@ export default class Player extends Phaser.GameObjects.Sprite{
         }
     }
     
+    getEnableState(){
+        return this.myPlayerConfig.isEnable;
+    }
+
+
     executeExplosion(){
+        this.body.velocity.x = 0;
+        this.body.velocity.y = 0;
         this.myPlayerConfig.isEnable = false;
         this.setTexture("explosion");
         this.play("explode");//al ejecutar esta funcion, el cuerpo se hace invisible

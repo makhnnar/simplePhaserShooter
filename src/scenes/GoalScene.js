@@ -21,21 +21,36 @@ export default class GoalScene extends Phaser.Scene {
 
         this.background.setOrigin(0,0).setScale(2);
         
-        var jugarBtn = this.add.image(
+        this.jugarBtn = this.add.image(
             config.width*0.5,
             config.height*0.8,
             "jugarBtn"
         ).setInteractive();
 
-        //this.menuNumber = -1;
+        let refScene = this;
 
-        var refScene = this;
-
-        jugarBtn.on(
+        this.jugarBtn.on(
             "pointerdown",
             function(ev){
                 refScene.menuNumber = 0;
             }
+        );
+
+        this.bePrepare = this.add.bitmapText(
+            config.width*0.5-175,
+            config.height*0.5, 
+            "pixelFont", 
+            "Be prepare, enemies are coming",
+            32
+        );
+
+
+        this.totalWave = this.add.bitmapText(
+            config.width*0.5-120,
+            config.height*0.6, 
+            "pixelFont", 
+            "NEXT WAVE  ---  " + 2000,
+            32
         );
 
     }

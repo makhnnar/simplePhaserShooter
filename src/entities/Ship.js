@@ -22,18 +22,32 @@ export default class Ship extends Phaser.GameObjects.Sprite{
         //no aplicable ya que el objeto debe desaparecer al llegar abajo
         //this.body.collideWorldBounds = true;
         //this.setInteractive();
+        this.myShipConfig.scene = scene;
     }
 
     update(){
-        this.moveShip(
-            this.myShipConfig.vel
-        );
+        if(this.myShipConfig.isEnable){
+            this.moveShip(
+                this.myShipConfig.vel
+            );
+        }
     }
 
     moveShip(speed){
         this.y += speed
         if(this.y>config.height){
+            this.myShipConfig.isEnable = false;
             this.resetShipPos();
+            this.myShipConfig.scene.time.addEvent(
+                {
+                    delay: 5000,
+                    callback: function(){
+                        this.myShipConfig.isEnable = true;
+                    },
+                    callbackScope: this,
+                    loop: false
+                }
+            );
         }
     }
 
